@@ -2,9 +2,11 @@ package com.uyghur.peopledbweb.web.controller;
 
 import com.uyghur.peopledbweb.biz.model.Person;
 import com.uyghur.peopledbweb.data.PersonRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,8 +41,11 @@ public class PeopleController {
 
 
     @PostMapping
-    public String savePerson(Person person){
-        personRepository.save(person);
-        return "redirect:people";
+    public String savePerson(@Valid Person person, Errors errors){
+        if (!errors.hasErrors()) {
+            personRepository.save(person);
+            return "redirect:people";
+        }
+        return "people";
     }
 }
