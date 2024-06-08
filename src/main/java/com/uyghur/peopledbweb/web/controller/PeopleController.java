@@ -5,6 +5,9 @@ import com.uyghur.peopledbweb.data.FileStorageRepository;
 import com.uyghur.peopledbweb.data.PersonRepository;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -15,11 +18,16 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import static java.lang.String.format;
+
 @Controller
 @RequestMapping("/people")
 @Log4j2
 public class PeopleController {
 
+    public static final String DISPO = """
+             attachment; filename="%s"
+            """;
     private PersonRepository personRepository;
 
     private FileStorageRepository fileStorageRepository;
@@ -44,6 +52,14 @@ public class PeopleController {
     public String showPeoplePage() {
 
         return "people";
+    }
+
+    @GetMapping("/images/{resource}")
+    public ResponseEntity<Resource> getResource(@PathVariable String resource){
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, format(DISPO, resource))
+                .body(fileStorageRepository.findByName(resource));
+
     }
 
 
