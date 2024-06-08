@@ -1,5 +1,6 @@
 package com.uyghur.peopledbweb.data;
 
+import com.uyghur.peopledbweb.exception.StorageException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -21,7 +22,7 @@ public class FileStorageRepository {
             Path filePath = Path.of(storageFolder).resolve(originalFilename).normalize();
             Files.copy(inputStream,filePath);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new StorageException(e);
         }
     }
 
@@ -30,8 +31,8 @@ public class FileStorageRepository {
             Path filePath = Path.of(storageFolder).resolve(filename).normalize();
             return new UrlResource(filePath.toUri());
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            throw new StorageException(e);
         }
-        return null;
+
     }
 }
