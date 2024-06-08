@@ -1,6 +1,7 @@
 package com.uyghur.peopledbweb.web.controller;
 
 import com.uyghur.peopledbweb.biz.model.Person;
+import com.uyghur.peopledbweb.biz.service.PersonService;
 import com.uyghur.peopledbweb.data.FileStorageRepository;
 import com.uyghur.peopledbweb.data.PersonRepository;
 import com.uyghur.peopledbweb.exception.StorageException;
@@ -33,10 +34,13 @@ public class PeopleController {
 
     private FileStorageRepository fileStorageRepository;
 
+    private PersonService personService;
+
     public PeopleController(PersonRepository personRepository,
-                            FileStorageRepository fileStorageRepository) {
+                            FileStorageRepository fileStorageRepository, PersonService personService) {
         this.personRepository = personRepository;
         this.fileStorageRepository = fileStorageRepository;
+        this.personService = personService;
     }
 
     @ModelAttribute("people")
@@ -73,8 +77,9 @@ public class PeopleController {
         log.info("Errors "+errors);
         if (!errors.hasErrors()) {
             try {
-                fileStorageRepository.save(photoFile.getOriginalFilename(),photoFile.getInputStream());
-                personRepository.save(person);
+//                fileStorageRepository.save(photoFile.getOriginalFilename(),photoFile.getInputStream());
+//                personRepository.save(person);
+                personService.save(person, photoFile.getInputStream());
                 return "redirect:people";
             } catch (StorageException e) {
                 model.addAttribute("errorMsg","System is currently unable to accept photo files at this time.");
@@ -87,7 +92,8 @@ public class PeopleController {
     @PostMapping(params = "delete=true")
     public String deletePeople(@RequestParam Optional<List<Long>> selections){
         if (selections.isPresent()) {
-            personRepository.deleteAllById(selections.get());
+//            personRepository.deleteAllById(selections.get());
+            personService.deleteAllById(selections.get());
         }
         return "redirect:people";
     }
