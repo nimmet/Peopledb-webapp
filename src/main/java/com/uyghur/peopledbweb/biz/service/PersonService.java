@@ -3,6 +3,8 @@ package com.uyghur.peopledbweb.biz.service;
 import com.uyghur.peopledbweb.biz.model.Person;
 import com.uyghur.peopledbweb.data.FileStorageRepository;
 import com.uyghur.peopledbweb.data.PersonRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,15 +41,20 @@ public class PersonService {
     }
 
     public void deleteAllById(Iterable <Long> ids) {
-        Iterable<Person> peopleToDelete = personRepository.findAllById(ids);
-        Stream<Person> peopleStream = StreamSupport.stream(peopleToDelete.spliterator(), false);
-        Set<String> filenames = peopleStream
-                .map(Person::getPhotoFileName)
-                .collect(Collectors.toSet());
+//        Iterable<Person> peopleToDelete = personRepository.findAllById(ids);
+//        Stream<Person> peopleStream = StreamSupport.stream(peopleToDelete.spliterator(), false);
+//        Set<String> filenames = peopleStream
+//                .map(Person::getPhotoFileName)
+//                .collect(Collectors.toSet());
 
 
+        Set<String> filenames = personRepository.findFileNamesByIds(ids);
         personRepository.deleteAllById(ids);
         storageRepository.deleteAllByName(filenames);
 
+    }
+
+    public Page<Person> findAll(Pageable pageable) {
+        return personRepository.findAll(pageable);
     }
 }
