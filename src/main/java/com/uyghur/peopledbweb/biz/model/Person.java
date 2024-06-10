@@ -43,5 +43,11 @@ public class Person {
     private String photoFileName;
 
 
+    public static Person parse(String csvLine) {
+        String[] fields = csvLine.split(",\\s*");
+        LocalDate dob = LocalDate.parse(fields[10], DateTimeFormatter.ofPattern("M/d/yyyy"));
 
+        return new Person(null, fields[2],fields[4],dob,fields[6],new BigDecimal(fields[25]), null);
+
+    }
 }
